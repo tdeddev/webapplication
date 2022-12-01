@@ -1,0 +1,606 @@
+﻿@model MVCProject.Models.EmployeeDATA
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Main.cshtml";
+}
+
+
+<br /><br />
+
+<center>
+
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-4 text-right">
+
+                <table class="table-bordered table">
+
+                    <tr>
+
+                        <td colspan="2" class="text-center" style="font-weight:bold">
+
+                            ข้อมูลผู้ใช้
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Name : </td>
+
+                        <td>
+                            @Model.FIRSTNAME  @Model.LASTNAME
+
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>Position : </td>
+
+                        <td>
+                            @Model.POSITION
+
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>Department : </td>
+
+                        <td>
+                            @Model.DEPARTMENT
+
+                        </td>
+                    </tr>
+
+
+
+                </table>
+
+                <br />
+
+                <table class="table-bordered table">
+
+                    <tr>
+
+                        <td colspan="4" class="text-center" style="font-weight:bold">
+
+                            ประวัติล่าสุด
+
+                        </td>
+
+                    </tr>
+
+                    @if (ViewData["REQDATA"] != null)
+                    {
+
+                        foreach (MVCProject.Models.RequestDATA req in ViewData["REQDATA"] as List<MVCProject.Models.RequestDATA>)
+                        {
+
+
+                            <tr>
+
+
+                                <td>
+
+                                    @Html.ActionLink(req.REQCODE, "Index", "History", new { reqcode = req.REQCODE }, null)
+
+                                </td>
+                                <td>
+                                   @req.USERID <input type="hidden" id="HDUSERID" name="HDUSERID" value='@req.USERID'/>
+
+                                </td>
+                                <td>
+                                    @req.POSITION
+
+                                </td>
+
+                                <td>
+                                    @req.DEPARTMENT
+
+                                </td>
+                            </tr>
+
+
+                        }
+
+                    }
+
+
+
+                </table>
+
+
+            </div>
+
+
+            <div class="col-lg-8">
+
+
+
+                <div id='appReq'>
+
+
+                    @using (Html.BeginForm())
+                    {
+
+
+                        <div>
+
+
+
+                            <b-card>
+
+
+
+
+
+                                <b-form-group label-cols-sm="12"
+                                              label="ฟอร์มคำร้อง"
+                                              label-align-sm="center" label-class="font-weight-bold pt-0"
+                                              label-for="nested-street">
+
+                                </b-form-group>
+
+                                <b-form-group label-cols-sm="3"
+                                              label="USERID:"
+                                              label-align-sm="right"
+                                              label-for="USERID">
+
+
+
+
+                                    @Html.TextBoxFor(x => x.USERID, new { @class = "form-control", @readonly = "true" })
+
+                                   
+
+
+
+                                </b-form-group>
+
+                                <b-form-group label-cols-sm="3"
+                                              label="ชื่อ:"
+                                              label-align-sm="right"
+                                              label-for="FIRSTNAME">
+
+
+
+
+                                    <b-form-input id="FIRSTNAME" v-model="FIRSTNAME" name="FIRSTNAME"></b-form-input>
+
+
+
+
+                                </b-form-group>
+                                <b-form-group label-cols-sm="3"
+                                              label="นามสกุล:"
+                                              label-align-sm="right"
+                                              label-for="LASTNAME">
+
+
+
+
+                                    <b-form-input id="LASTNAME" name="LASTNAME" v-model="LASTNAME"></b-form-input>
+
+                                
+                                </b-form-group>
+
+
+
+                                <b-form-group label-cols-sm="3"
+                                              label="ผู้อนุมัติ:"
+                                              label-align-sm="right"
+                                              label-for="MANAGER">
+
+
+
+
+
+                                    <select id="APPROVEID" name="APPROVEID" class="form-control dropdown"></select>
+
+
+
+
+                                </b-form-group>
+
+
+
+
+                                <b-form-group label-cols-sm="3"
+                                              label="เพศ:"
+                                              label-align-sm="right"
+                                              label-for="Gender">
+
+
+                                    <b-form-radio-group id="GENDER" name="GENDER" style="text-align:left" v-model="GENDER">
+
+
+                                        <b-form-radio value="Man">ชาย</b-form-radio>
+                                        <b-form-radio value="Woman">หญิง</b-form-radio>
+
+
+                                    </b-form-radio-group>
+
+
+
+                                </b-form-group>
+
+
+
+                                <b-form-group label-cols-sm="3"
+                                              label="รหัสคำขอ:"
+                                              label-align-sm="right"
+                                              label-for="REQCODE">
+
+
+                                    <input type="text" name="REQCODE" id="REQCODE" value='@ViewBag.REQCODE' class="form-control" readonly="readonly" />
+
+
+                                </b-form-group>
+
+                                <b-form-group label-cols-sm="3"
+                                              label="หัวข้อ:"
+                                              label-align-sm="right"
+                                              label-for="TITLE">
+
+
+                                    <b-form-select v-model="TITLE" id="TITIE" name="TITLE" :options="options"></b-form-select>
+
+
+                                </b-form-group>
+
+
+
+                                <b-form-group label-cols-sm="3"
+                                              label="คำอธิบาย:"
+                                              label-align-sm="right"
+                                              label-for="Description">
+
+
+                                    <b-form-textarea id="DESCRIPTION" name="DESCRIPTION"
+                                                     v-model="DESCRIPTION"
+                                                     placeholder="Enter something..."
+                                                     rows="3"
+                                                     max-rows="6"></b-form-textarea>
+
+                                </b-form-group>
+
+
+                                <br />
+
+                                <b-form-group>
+
+                                    <b-button type="submit" id="btnSave" name="btnSave" variant="info">บันทึก</b-button>
+
+                                </b-form-group>
+
+                            </b-card>
+
+
+
+
+
+                        </div>
+
+
+
+
+                    }
+
+                </div>
+
+                <div>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+      
+
+        <div class="row col-lg-12">
+
+            <div id="app2">
+
+                
+       
+                <b-table id="my-table" fixed responsive :fields="fields" :items="items" :per-page="perPage"
+                         :current-page="currentPage" outlined>
+
+
+                    <template v-slot:cell(index)="data">
+                        {{ data.index + 1 }}
+                    </template>
+
+                    <template v-slot:cell(REQCODE)="data">
+                        <span class="text-info">{{ data.item.REQCODE }}</span>
+                    </template>
+
+
+
+
+                    <template v-slot:cell(SEND)="row">
+                        <button size="sm" v-on:click="DeleteData(row.item.REQCODE)" class="btn btn-info">
+                           Delete
+                        </button>
+
+                    </template>
+
+
+
+                </b-table>
+
+                <b-row>
+
+                    <b-pagination v-model="currentPage"
+                                  :total-rows="rows"
+                                  :per-page="perPage"
+                                  aria-controls="my-table" class="row"></b-pagination>
+
+                </b-row>
+
+            </div>
+
+        </div>
+
+
+     
+
+      
+
+    </div>
+
+
+</center>
+
+
+
+<script>
+
+
+
+
+
+
+
+  
+    new Vue(
+
+        {
+            el: '#appReq',
+
+            data() {
+
+
+                return {
+
+
+                    FIRSTNAME: '@(Model.FIRSTNAME)',
+                    LASTNAME: '@(Model.LASTNAME)',
+
+                    DESCRIPTION: '',
+                    TITLE: null,
+
+                    GENDER: 'Man',
+
+
+                    options: [
+
+                    ]
+                }
+            },
+
+
+            mounted: function () {
+
+
+                this.loadData();
+
+            },
+
+
+            methods: {
+
+
+
+                loadData() {
+
+                    axios
+                        .get('http://localhost:33333/WF/GetTitle')
+                        .then(response => {
+                            this.options = response.data
+                        })
+
+                }
+
+
+            }
+
+        }
+
+    );
+
+
+
+
+
+    new Vue({
+        el: "#app2",
+
+  
+
+        data() {
+            return {
+
+
+
+                perPage: 5,
+                currentPage: 1,
+             
+
+                fields: [
+
+                    //'index',
+                    { key: 'index', label: 'No.' },
+                    { key: 'REQCODE', label: 'รหัสคำขอ', sortable: true },
+                    { key: 'FIRSTNAME', label: 'ฃื่อ' },
+                    { key: 'LASTNAME', label: 'นามสกุล' },
+                    { key: 'TITLE', label: 'หัวข้อ' },
+                    { key: 'DESCRIPTION', label: 'คำอธิบาย' },
+                    { key: 'APPROVEID', label: 'ผู้อนุมัติ' },
+                    { key: 'SEND', label: 'ส่งคำขอ' }
+
+
+                ]
+                ,
+
+                items: []
+
+              
+            }
+        },
+
+        methods: {
+
+           
+
+            loadData() {
+
+                axios
+                    .post('http://localhost:33333/WF/GetData?userid=' + $('#HDUSERID').val())
+                    .then(response => {
+                        this.items = response.data
+                    })
+
+            },
+
+
+            DeleteData(reqcode) {
+
+
+                axios
+                    .post('http://localhost:33333/WF/DeleteData?reqcode=' + reqcode + '&&userid=' + $('#HDUSERID').val())
+                    .then(response => {
+
+                        alert('ลบรายการ  ' + reqcode + '  เรียบร้อย');
+
+                        this.loadData()
+    
+
+
+                    })
+
+
+            }
+
+
+
+
+        },
+
+
+        computed: {
+            rows() {
+                return this.items.length
+            }
+        },
+
+   
+
+        mounted: function () {
+
+      
+            this.loadData();
+
+            this.totalRows = this.items.length
+
+        },
+
+   
+
+    });
+
+
+
+
+    function Send(v) {
+
+        alert(v);
+
+    }
+
+
+
+    $(document).ready(function () {
+
+        LoadManager();
+
+    });
+
+
+
+    function LoadManager() {
+      
+        //call ajax
+
+
+        $.ajax(
+            {
+                url: '/WF/LoadApprover',
+
+                data: JSON.stringify(
+                    {
+
+                        "USERID": ''
+                    }),
+
+
+                contentType: "application/json; charset=utf-8",
+
+                type: "POST",
+
+                success: function (data) {
+
+                    if (data != null) {
+
+                     
+
+                        $.each(data, function (i, item) {
+
+
+                            $("#APPROVEID").append(new Option(data[i].USERID, data[i].USERID, true, true));
+
+
+                        });
+
+                      
+
+                    }
+                },
+
+                error: function (data) {
+
+                }
+
+
+            })
+
+
+
+
+
+
+    }
+
+
+
+
+</script>

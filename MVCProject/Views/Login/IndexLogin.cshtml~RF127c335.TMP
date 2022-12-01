@@ -1,0 +1,77 @@
+﻿
+@model MVCProject.Models.EmployeeDATA
+
+<center>
+
+    <br /><br />
+
+    @using (Html.BeginForm())
+    {
+
+
+        <div class="table-bordered table-responsive" style="width:30%">
+
+            <div class="bg-info">
+
+                <br />
+
+                <h5>@ViewBag.Head @ViewBag.Title</h5>
+
+                <br />
+
+            </div>
+
+            <br />
+
+            <div id="divusername" class="form-inline form-group-sm">
+
+
+
+              
+
+                <input id="USERID" name="USERID" type="text" style="width:100% ; font-size:16px" class="form-control" placeholder="@Model.USERID">
+
+
+                <br />
+
+
+            </div>
+
+            <br />
+
+            <div class="form-inline form-group-sm">
+
+
+
+
+                <input id="PASSWORD" name="PASSWORD" type="password" style="width:100%  ; font-size:16px" class="form-control" placeholder="@Model.PASSWORD">
+
+
+
+
+
+            </div>
+
+            <br />
+
+            <div class="form-inline form-group-sm">
+
+                @*<center>*@
+
+                    <input type="submit" class="form-group btn btn-info" value="Login" />
+                    <input type="submit" class="form-group btn btn-info" value="Cancel" />
+
+                @*</center>*@
+            </div>
+
+        </div>
+
+
+
+    }
+
+
+
+</center>
+
+

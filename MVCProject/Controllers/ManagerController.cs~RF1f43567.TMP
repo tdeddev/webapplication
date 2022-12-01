@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MVCProject.DataAccess;
+using MVCProject.Models;
+using Newtonsoft.Json;
+
+namespace MVCProject.Controllers
+{
+    public class ManagerController : Controller
+    {
+        // GET: Manager
+        public ActionResult Index()
+        {
+            return View();
+        }
+        public ActionResult Form()
+        {
+
+
+            EmployeeDATA empdata = new EmployeeDATA();
+            RequestDATA reqdata = new RequestDATA();
+
+            if (Session["USERID"] != null)
+            {
+                string userid = Session["USERID"].ToString();
+
+                EmployeeDAL dal = new EmployeeDAL();
+
+                empdata = dal.GetUserInfo(userid); //ดึง User Profile
+
+
+
+            }
+
+         
+
+            return PartialView(empdata);
+        }
+
+        [HttpPost]
+
+        public ActionResult Form(string CREATEDATE)
+        {
+
+            return PartialView(empdata);
+        }
+
+    }
+}
+

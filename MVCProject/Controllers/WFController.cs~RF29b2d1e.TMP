@@ -1,0 +1,153 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MVCProject.DataAccess;
+using MVCProject.Models;
+using Newtonsoft.Json;
+
+
+namespace MVCProject.Controllers
+{
+    public class WFController : Controller
+    {
+        // GET: WF
+        public ActionResult Index()
+        {
+            EmployeeDATA empdata = new EmployeeDATA();
+            RequestDATA reqdata = new RequestDATA();
+
+            if (Session["USERID"] != null)
+            {
+                string userid = Session["USERID"].ToString();
+
+                EmployeeDAL dal = new EmployeeDAL();
+
+                empdata = dal.GetUserInfo(userid); //ดึง User Profile
+
+                if (empdata != null)
+                {
+
+                    #region Get History
+
+                    RequestDAL rdal = new RequestDAL();
+
+                    List<RequestDATA> lstdata = rdal.GetRequestByUserId(userid);
+
+                    reqdata.LSTREQ = lstdata;
+
+                    string json = JsonConvert.SerializeObject(reqdata);
+
+                    reqdata = JsonConvert.DeserializeObject<RequestDATA>(json);
+
+
+                    if (reqdata.LSTREQ.Count > 0)
+                    {
+
+                        ViewData["REQDATA"] = reqdata.LSTREQ;
+
+
+
+
+                    }
+
+                    #endregion
+
+
+                    #region Get ReqCode
+
+
+                    ViewBag.REQCODE =  rdal.GetReqCode();
+
+
+                    #endregion
+
+                }
+
+
+            }
+
+            return View(empdata);
+        }
+
+        [HttpPost] 
+
+        public ActionResult Index(RequestDATA data)
+        {
+
+            RequestDAL dal = new RequestDAL();
+
+            //บันทึก ข้อมูล Request
+
+            dal.RequestInsert(data);
+
+            //อัพเดทลง ตาราง tblcontroldoc
+
+            int  docnum = Convert.ToInt16(data.REQCODE.Substring(6, data.REQCODE.Length - 6));
+            string prefixdoc = "REQ";
+
+
+            DocumentDAL docDal = new DocumentDAL();
+
+            docDal.UpdateDocnum(docnum, prefixdoc);
+
+
+            return Index();
+
+        }
+
+        [HttpPost]
+
+        public ActionResult LoadApprover(EmployeeDATA data)
+        {
+            EmployeeDAL dal = new EmployeeDAL();
+
+           List<EmployeeDATA> listempdata = dal.GetManagerInfo();
+
+
+            return Json(listempdata);
+
+        }
+
+        [HttpGet]
+
+        public JsonResult GetData()
+        {
+            RequestDAL rdal = new RequestDAL();
+
+            List<RequestDATA> lstdata = rdal.GetRequest();
+
+            List<TBLREQUEST> lsttbl = new List<TBLREQUEST>();
+
+            if (lstdata!=null && lstdata.Count>0)
+            {
+
+                //lsttbl = lstdata.OfType<TBLREQUEST>().ToList();
+
+                var result = lstdata.Select(i => new { i.REQCODE, i.USERID, i.TITLE, i.DESCRIPTION, i.APPROVEID })
+                         .OrderByDescending(i => i.REQCODE)
+                        .ToList();
+
+            }
+
+          
+            return Json(lsttbl, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+    }
+
+    public class TBLREQUEST
+    {
+
+        public string REQCODE { get; set; }
+        public string USERID { get; set; }
+        public string TITLE { get; set; }
+        public string DESCRIPTION { get; set; }
+        public string APPROVEID { get; set; }
+
+    }
+
+}

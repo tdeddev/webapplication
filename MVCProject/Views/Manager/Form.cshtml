@@ -1,0 +1,385 @@
+﻿@model MVCProject.Models.EmployeeDATA
+
+
+
+<br /><br />
+
+@using (Html.BeginForm())
+{
+
+<center>
+
+
+
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-lg-3 text-right">
+
+                <table class="table table-bordered">
+
+                    <tr>
+
+                        <td colspan="2" class="text-center" style="font-weight:bold">
+
+                            ข้อมูลผู้ใช้
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Name : </td>
+
+                        <td>
+                            @Model.FIRSTNAME  @Model.LASTNAME <input type="hidden" id="USERID" name="USERID" value='@Model.USERID' />
+
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>Position : </td>
+
+                        <td>
+                            @Model.POSITION
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>Department : </td>
+
+                        <td>
+                            @Model.DEPARTMENT
+
+                        </td>
+                    </tr>
+
+
+
+
+                </table>
+
+            </div>
+
+
+            <div class="col-lg-9">
+
+                <table class="table table-bordered">
+
+                    <tr>
+                        <td colspan="2">
+
+                            <center>
+                                ค้นหารายการคำขอ
+                            </center>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+
+                        <td class="text-right">เลือกวันที่ :</td>
+                        <td>
+                            <div id="appDatepicker">
+                                <template>
+
+
+                                    <b-form-datepicker id="CREATEDATE" name="CREATEDATE"
+                                                       :date-format-options="{ day: 'numeric', month: 'numeric', year: 'numeric' }" locale="th" v-model="CREATEDATE" class="mb-2"></b-form-datepicker>
+
+
+
+
+                                </template>
+
+
+
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td class="text-right">
+
+                            ประเภทสถานะ
+
+                        </td>
+                        <td>
+
+                            <select id="ACTION" name="ACTION" class="dropdown form-control">
+
+
+                                <option value="Approve">อนุมัติ</option>
+                                <option value="Cancel">ยกเลิก</option>
+
+                            </select>
+
+                        </td>
+
+
+                    </tr>
+
+                    <tr>
+
+                        <td colspan="2">
+
+                            <button type="submit" class="btn form-control btn-info">ค้นหา</button>
+
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <br /><br />
+
+
+    <div class="row">
+
+        @if (ViewData["Result"] != null)
+        {
+
+
+            <table id="tblresult" class="table table-bordered">
+
+                <tr>
+
+                    <td class="bg-info">รหัสคำขอ</td>
+                    <td class="bg-info">ฃื่อ</td>
+                    <td class="bg-info">นามสกุล</td>
+                    <td class="bg-info">หัวข้อ</td>
+                    <td class="bg-info">คำอธิบาย</td>
+                    <td class="bg-info">ผู้อนุมัติ</td>
+                    <td class="bg-info">สถานะ</td>
+                    <td class="bg-info">ยกเลิก</td>
+                    <td class="bg-info">อนุมัติ</td>
+                    <td class="bg-info">วันที่คำขอ</td>
+
+
+                </tr>
+
+
+                @foreach (MVCProject.Models.RequestDATA req in ViewData["Result"] as List<MVCProject.Models.RequestDATA>)
+                {
+
+                    <tr>
+
+                        <td>@req.REQCODE</td>
+                        <td>@req.FIRSTNAME</td>
+                        <td>@req.LASTNAME</td>
+                        <td>@req.TITLE</td>
+                        <td>@req.DESCRIPTION</td>
+                        <td>@req.APPROVEID</td>
+                        <td>
+
+                            @if (req.ACTION == "Approve")
+                            {
+
+                                <span class="text-success">@req.ACTION</span>
+
+                            }
+                            else
+                            {
+
+                                <span class="text-danger">@req.ACTION</span>
+                            }
+
+
+                        </td>
+                        <td><input id="btnCancel" class="btn btn-md btn-info" onclick="fnCancel('@req.REQCODE')" name="btnCancel" type="button" value="ยกเลิก" /></td>
+                        <td><input id="btnApprove" class="btn btn-md btn-info" onclick="fnApprove('@req.REQCODE')" name="btnApprove" type="button" value="อนุมัติ" /></td>
+
+                        <td>
+
+                            @req.CREATEDATE.ToString("dd/MM/yyyy")
+
+                            @{
+
+                                string hdCreateDate = "";
+
+                                hdCreateDate = req.CREATEDATE.ToString("yyyy-MM-dd");
+                            }
+
+                            <input type="hidden" id="HDCREATEDATE" name="HDCREATEDATE" value=@hdCreateDate />
+
+                        </td>
+                    </tr>
+
+
+
+                }
+
+
+                <tr>
+
+                    <td colspan="10">
+
+                        <input id="Button1" class="btn form-control btn-info" type="button" value="ExportExcel " onclick="ExportExcel();" />
+
+
+                    </td>
+
+
+                </tr>
+
+
+            </table>
+
+
+
+
+        }
+
+    </div>
+
+    <br /><br />
+
+    <div class="modal" id="modalMsg" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+
+                    <h5 class="modal-title">Message</h5>
+
+
+                </div>
+                <div class="modal-body">
+                    <p>รหัสคำขอ <label id="lblreqcode" name="lblreqcode"></label>  อัพเดทสถานะเรียบร้อย</p>
+                </div>
+                <div class="modal-footer">
+
+                    <button id="btn" name="btn" type="submit" class="btn btn-primary" value="OK">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</center>
+
+}
+<script>
+
+
+
+    new Vue({
+        el: "#appDatepicker",
+        data() {
+            return {
+
+                CREATEDATE: ''
+            }
+        }
+
+    });
+
+
+
+</script>
+
+
+
+
+
+
+   
+    <script>
+
+        function ExportExcel() {
+
+            $("#tblresult").table2excel({
+                filename: "TableList.xls"
+            });
+        }
+
+
+        function fnCancel(reqcode) {
+
+         
+
+            var returnData;
+
+            axios
+
+                .post('http://localhost:33333/Manager/Cancel?reqcode=' + reqcode)
+
+           
+                .then(response => {
+
+                   
+                    if (response.data != null) {
+
+                        returnData = response.data;
+
+                        var reqcodeObj = returnData.REQCODE;
+
+                        $("#lblreqcode").text(reqcodeObj);
+
+
+                        $("#modalMsg").show();
+
+
+                    }
+                    else {
+
+                        alert('เกิดข้อผิดพลาด');
+                    }
+
+
+                })
+
+        }
+
+
+        function fnApprove(reqcode) {
+
+
+
+            var returnData;
+
+
+            axios
+                .post('http://localhost:33333/Manager/Approve?reqcode=' + reqcode)
+
+
+                .then(response => {
+
+                    if (response.data != null) {
+
+                        returnData = response.data;
+
+                        var reqcodeObj = returnData.REQCODE;
+
+                        $("#lblreqcode").text(reqcodeObj);
+
+                        $("#modalMsg").show();
+
+
+                    }
+                    else {
+
+                        alert('เกิดข้อผิดพลาด');
+                    }
+
+                })
+
+        }
+
+
+    </script>
+
